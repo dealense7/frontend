@@ -1,6 +1,20 @@
-const Task = ({ item }) => {
+import { useState } from "react";
+import TasksAction from "../Actions/TasksAction";
+
+const Task = ({ item, selectItem, makeRender }) => {
+  const [dropdown, setDropdown] = useState(false);
+  const changeStatus = () => {
+    new TasksAction().changeStatus(item.id).then((data) => {
+      makeRender();
+    });
+  };
+  const deleteItem = () => {
+    new TasksAction().deleteItem(item.id).then((data) => {
+      makeRender();
+    });
+  };
   return (
-    <div className="bg-white p-3 py-5 rounded-sm shadow-md mb-3">
+    <div draggable className="bg-white p-3 py-5 rounded-sm shadow-md mb-3">
       <div className="flex items-center justify-between">
         {item.getDeadlineDiffForHumans ? (
           <div className="flex items-center text-red-400">
@@ -25,7 +39,10 @@ const Task = ({ item }) => {
         ) : (
           <div></div>
         )}
-        <span className="text-gray-700">
+        <span
+          className="text-gray-700 relative cursor-pointer"
+          onClick={() => setDropdown(!dropdown)}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -34,6 +51,48 @@ const Task = ({ item }) => {
           >
             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
           </svg>
+          {dropdown && (
+            <div className="absolute right-0 bg-white shadow-md rounded-md px-2 p-1">
+              <ul className="w-44 font-normal text-xs text-gray-700">
+                <li
+                  className="p-2 px-4 w-full border-b hover:bg-gray-100 cursor-pointer"
+                  onClick={() => selectItem()}
+                >
+                  Open
+                </li>
+                {item && item.status == "ready" && (
+                  <li
+                    onClick={changeStatus}
+                    className="p-2 px-4 w-full border-b hover:bg-gray-100 cursor-pointer"
+                  >
+                    Move to Processing
+                  </li>
+                )}
+                {item && item.status == "processing" && (
+                  <li
+                    onClick={changeStatus}
+                    className="p-2 px-4 w-full border-b hover:bg-gray-100 cursor-pointer"
+                  >
+                    Move to done
+                  </li>
+                )}
+                {item && item.status == "done" && (
+                  <li
+                    onClick={changeStatus}
+                    className="p-2 px-4 w-full border-b hover:bg-gray-100 cursor-pointer"
+                  >
+                    Back to Processing
+                  </li>
+                )}
+                <li
+                  onClick={deleteItem}
+                  className="p-2 px-4 w-full hover:bg-gray-100 text-red-500 cursor-pointer"
+                >
+                  Delete
+                </li>
+              </ul>
+            </div>
+          )}
         </span>
       </div>
       <h4 className="my-2 text-gray-900 text-base font-bold">{item.title}</h4>

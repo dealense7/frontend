@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-
-const Navbar = ({ count }) => {
+const Navbar = ({ count, callCreate }) => {
   return (
     <section>
       <div className="flex my-3 items-center justify-between">
@@ -10,7 +8,10 @@ const Navbar = ({ count }) => {
             {count > 0 ? "(" + count + ")" : ""}
           </span>
         </h2>
-        <button className="bg-blue p-2 px-5 text-base font-normal text-white rounded-sm">
+        <button
+          onClick={() => callCreate()}
+          className="bg-blue p-2 px-5 text-base font-normal text-white rounded-sm"
+        >
           + New Task
         </button>
       </div>
